@@ -4,8 +4,6 @@ import { ADD_CONTACT_WITH_PHONES } from "../graphql/Mutations"
 
 function AddContact({contactList, refetch, addMode, handleAddMode}) {
 
-  const [listOfNames, setListOfNames] = useState(contactList.map((contact)=>contact.first_name+contact.last_name))
-
   // Variables to store form data
   const [contactName, setContactName] = useState({
     first_name: '',
@@ -35,6 +33,7 @@ function AddContact({contactList, refetch, addMode, handleAddMode}) {
 
     // check if name is unique
     useEffect(()=>{ 
+        const listOfNames = contactList.map((contact)=>contact.first_name+contact.last_name)
         let currentName = contactName.first_name+contactName.last_name
 
         if(listOfNames.includes(currentName)){
@@ -63,7 +62,7 @@ function AddContact({contactList, refetch, addMode, handleAddMode}) {
     setSecondaryNumbers(updatedSecondaryNumbers);
   };
   // Send mutation to add contact
-  const [createUser,{data}] = useMutation(ADD_CONTACT_WITH_PHONES);
+  const [createUser] = useMutation(ADD_CONTACT_WITH_PHONES);
 
   const handleSubmit = async (event) => {
     try{  

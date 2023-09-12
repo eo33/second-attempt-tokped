@@ -22,7 +22,7 @@ function ContactList() {
   }
   
   // Load GraphQL query
-  const {loading, error, data,refetch} = useQuery(GET_CONTACT_LIST,{
+  const {data,refetch} = useQuery(GET_CONTACT_LIST,{
     variables: {
         "where":{
             first_name: {"_like": `%${searchQuery}%`}
@@ -39,16 +39,16 @@ function ContactList() {
     if(data){
         setContactList(data.contact)
         // Check if isFavorite is already populated. If not, initialize to false
-        if(Object.keys(isFavorite).length == 0){
+        if(Object.keys(isFavorite).length === 0){
             let result = {}
-            data.contact.map(contact=>{
+            data.contact.forEach(contact=>{
                 result[contact.id] = false;
             })
             setIsFavorite(result)
         }
         console.log(data.contact)
     }
-  },[data,addMode])
+  },[data,addMode,isFavorite])
 
   // Count how many contacts available, for pagination
   const availableContact = contactList.filter((contact) =>(isFavorite[contact.id] === showFavorite) || (contactMode === 'Delete')).length
@@ -63,7 +63,7 @@ function ContactList() {
                     {contactMode}
                     </h2>                
                     <div className="col d-flex justify-content-end align-items-center mx-0 px-0 mt-3">
-                        {contactMode == "Contacts" ? 
+                        {contactMode === "Contacts" ? 
                             <>
                                 <button 
                                     className='d-flex flex-column align-items-center button-style px-2' 
@@ -125,7 +125,7 @@ function ContactList() {
                 {
                     // Filter when it is in favorite, or when it is in delete mode. Also, only print 10 contacts
                     contactList
-                        .filter(contact => (isFavorite[contact.id] == showFavorite) || (contactMode=="Delete"))
+                        .filter(contact => (isFavorite[contact.id] === showFavorite) || (contactMode==="Delete"))
                         .slice((page-1)*10,page*10)
                         .map(contact=>(
                         <>
