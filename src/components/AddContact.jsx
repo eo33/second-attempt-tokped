@@ -64,25 +64,18 @@ function AddContact({contactList, refetch, addMode, handleAddMode}) {
   // Send mutation to add contact
   const [createUser] = useMutation(ADD_CONTACT_WITH_PHONES);
 
-  const handleSubmit = async (event) => {
-    try{  
-        
-        const phones = [primaryNumber, ...secondaryNumbers];
-        const newUser = {
-            ...contactName,
-            phones: phones.map((number) => ({ number })),
-        }
-        createUser({
-        variables: newUser,
-        });
-        await refetch();
-        event.preventDefault();
-        handleAddMode(false);
+  const handleSubmit = () => {
+      const phones = [primaryNumber, ...secondaryNumbers];
+      const newUser = {
+          ...contactName,
+          phones: phones.map((number) => ({ number })),
+      }
+      createUser({
+      variables: newUser,
+      });
+      refetch();
+      handleAddMode(false);
     }
-    catch(error){
-        console.error('Mutation error:', error);
-    }
-  };
 
   return (
     <>
