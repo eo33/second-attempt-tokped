@@ -1,0 +1,125 @@
+:root{
+    --primary-color: #3a77fc;
+    --secondary-color: #F2F2F6;
+    --tertiary-color: #858589;
+}
+
+/*Simple animation*/
+@keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+}
+
+@keyframes fadeInFromLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-100%); /* Start off-screen to the left */
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0); /* Move to the original position */
+    }
+}
+
+.search-bar, .search-bar > input{
+    background-color: var(--secondary-color);
+    color: var(--tertiary-color);
+    border-radius: 20pt;
+    outline: none;
+    border: none;
+}
+
+.profile-pic{
+    background-color: var(--secondary-color);
+    border-radius: 50%;
+    color: var(--tertiary-color);
+}
+
+.button-style{
+    color: var(--primary-color);
+    text-decoration: none;
+    border: none;
+    background: none;
+    padding: 0;
+    margin: 0;
+}  
+
+.button-disabled{
+    pointer-events: none;
+    opacity: 0.2; /* You can adjust the opacity to give a disabled appearance */
+}
+
+.black{
+    background-color: black;
+}
+
+.add-contact{
+    animation: 0.5s fadeInFromLeft  ease-in-out forwards;
+}
+
+.contact-list{
+    animation: 0.5s fadeIn ease-in-out forwards;
+}
+
+.small-text{
+    font-size: small;
+}
+
+.large-text{
+    font-size: large;
+    color: var(--primary-color) !important
+}
+
+.x-large-text{
+    font-size: x-large;
+    color: var(--primary-color) !important
+}
+
+.input-form{
+    background-color: var(--secondary-color);
+    color: var(--tertiary-color);
+    border-radius: 20pt;
+    outline: none;
+    border: none;
+}
+
+.stretch-form{
+    width: 100%;
+}
+
+.validation{
+    color:red;
+    font-weight: 600;
+    animation: 0.7s fadeIn ease-in-out forwards;
+}
+
+.not-valid{
+
+    color: var(--tertiary-color);
+    pointer-events: none;
+}
+.dummy{
+    height: 1.5em !important;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.delete{
+    color: red  !important;
+}
+
+.search-bar-disabled{
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+/*Remove border from smaller screen*/
+@media (max-width: 768px) {
+    .add-contact {
+      border: 0px solid #ccc !important; /* You can adjust the border style, color, and width */
+    }
+  }
