@@ -38,16 +38,46 @@ function ContactList() {
   useEffect(()=>{
     if(data){
         setContactList(data.contact)
+        let favCount = Object.keys(isFavorite).length
+        let contactCount = data.contact.length
         // Check if isFavorite is already populated. If not, initialize to false
-        if(Object.keys(isFavorite).length === 0){
+        if( favCount === 0){
             let result = {}
             data.contact.forEach(contact=>{
                 result[contact.id] = false;
             })
             setIsFavorite(result)
+        } 
+        /*
+        else {
+            // Update isFavorite so that is in sync with contact list
+            // When new contact is added
+            if(contactCount > favCount){
+                // Assume that newly added contact will always be the latest
+                let newID = {...isFavorite};
+                for(let contact in data.contact){
+                    // If contact id not in newID, add it
+                    if(!(contact.id in newID)){
+                        newID[contact.id] = false
+                    }
+                }
+                setIsFavorite(newID)
+            } else {
+                // When contact is deleted
+                let newID = {}
+                data.contact.forEach(contact=>newID[contact.id] = false)
+                for(let id in isFavorite){
+                    // If ID already exist in newID, changei t
+                    if(id in newID){
+                        newID[id] = isFavorite[id]
+                    }
+                }
+                setIsFavorite(newID)
+            }   
         }
-        console.log(data.contact)
+        */
     }
+
   },[data,addMode,isFavorite])
 
   // Count how many contacts available, for pagination
@@ -124,6 +154,7 @@ function ContactList() {
                 </div>
                 {
                     // Filter when it is in favorite, or when it is in delete mode. Also, only print 10 contacts
+                    //.filter(contact => (isFavorite[contact.id] === showFavorite) || (contactMode==="Delete"))
                     contactList
                         .filter(contact => (isFavorite[contact.id] === showFavorite) || (contactMode==="Delete"))
                         .slice((page-1)*10,page*10)
@@ -174,11 +205,13 @@ function ContactList() {
                                             type='button'
                                             onClick={()=>{
                                                 // Delete from Apollo
-                                                deleteUser({variables: {
-                                                    "id": contact.id
-                                                }})
-                                                // Delete from local state
-                                                setContactList(prev=>prev.filter(e=>e.id !== contact.id))
+                                                deleteUser({
+                                                    variables: {
+                                                        "id": contact.id
+                                                    },
+                                                    refetchQueries: [GET_CONTACT_LIST],
+                                                    awaitRefetchQueries:true,
+                                                })
                                             }}
                                         >
                                             <i className="button-style fa-solid fa-trash fa-2x"></i>

@@ -1,6 +1,7 @@
 import { useEffect,useState } from "react"
 import { useMutation } from "@apollo/client"
 import { ADD_CONTACT_WITH_PHONES } from "../graphql/Mutations"
+import { GET_CONTACT_LIST } from "../graphql/Queries";
 
 function AddContact({contactList, refetch, addMode, handleAddMode}) {
 
@@ -71,9 +72,10 @@ function AddContact({contactList, refetch, addMode, handleAddMode}) {
           phones: phones.map((number) => ({ number })),
       }
       createUser({
-      variables: newUser,
+        variables: newUser,
+        refetchQueries: [GET_CONTACT_LIST],
+        awaitRefetchQueries:true,
       });
-      refetch();
       handleAddMode(false);
     }
 
