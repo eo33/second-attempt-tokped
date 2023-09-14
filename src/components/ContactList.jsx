@@ -36,37 +36,28 @@ function ContactList() {
 
   // Store and fetch data whenever theres an update 
   useEffect(()=>{
+    console.log('run data')
     if(data){
         setContactList(data.contact)
-        let favCount = Object.keys(isFavorite).length
-       
-        // Check if isFavorite is already populated. If not, initialize to false
-        if( favCount === 0){
-                let result = {}
-                data.contact.forEach(contact=>{
-                    result[contact.id] = false;
-                })
-                setIsFavorite(result)
-            } 
-        }
-    },[data,addMode,isFavorite])
+    }
+    },[data])
 
     // Update isFavorite to keep in sync with contactList
     useEffect(()=>{
+        console.log('run once')
         let favCount = Object.keys(isFavorite).length
         let contactCount = contactList.length
+        let newID = {}
         if(contactCount > favCount){
-            let newID = {...isFavorite};
+            newID = {...isFavorite};
             for(let contact of contactList){
                 // If contact id not in newID, add it
                 if(!(contact.id in newID)){
                     newID[contact.id] = false
                 }
             }
-            setIsFavorite(newID)
         } else {
             // Create a brand new fav list
-            let newID = {}
             contactList.forEach(contact=>newID[contact.id] = false)
             // Update the new fav list based on previous favorite
             for(let id in isFavorite){
@@ -74,9 +65,9 @@ function ContactList() {
                     newID[id] = isFavorite[id]
                 }
             }
-            setIsFavorite(newID)
         }
-    }, [contactList])
+        setIsFavorite(newID)
+    }, [contactList,isFavorite])
 
   // Count how many contacts available, for pagination
   const availableContact = contactList.filter((contact) =>(isFavorite[contact.id] === showFavorite) || (contactMode === 'Delete')).length
