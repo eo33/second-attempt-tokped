@@ -10,9 +10,7 @@ function App() {
   return (
     <ApolloProvider client={client}>
       <div className="container">
-        <div className="row">
-          <ContactList />
-        </div>
+        <ContactList />
       </div>
     </ApolloProvider>
   );

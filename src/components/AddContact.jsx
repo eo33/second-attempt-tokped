@@ -3,7 +3,7 @@ import { useMutation } from "@apollo/client"
 import { ADD_CONTACT_WITH_PHONES } from "../graphql/Mutations"
 import { GET_CONTACT_LIST } from "../graphql/Queries";
 
-function AddContact({contactList, refetch, addMode, handleAddMode}) {
+function AddContact({contactList, addMode, handleAddMode}) {
 
   // Variables to store form data
   const [contactName, setContactName] = useState({
@@ -80,7 +80,7 @@ function AddContact({contactList, refetch, addMode, handleAddMode}) {
     }
 
   return (
-    <>
+    <div className="row">
         {addMode ? 
         <form className="col-md-8 add-contact d-flex flex-column offset-md-2 border rounded" onSubmit={handleSubmit}>
           <div className="row mt-4">
@@ -183,7 +183,7 @@ function AddContact({contactList, refetch, addMode, handleAddMode}) {
           ))}
 
           <div className="row p-2 m-3 px-4">
-            <div className="col">
+            <div className="col d-flex justify-content-end">
               <button className="button-style" type="button" onClick={secondaryNumberHandler}>
                 Add a new number
               </button>
@@ -205,7 +205,7 @@ function AddContact({contactList, refetch, addMode, handleAddMode}) {
           </div>
         </form>:null
         }
-    </>
+  </div>
   )
 }
 export default AddContact
