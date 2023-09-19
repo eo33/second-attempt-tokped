@@ -19,14 +19,19 @@ function ContactList() {
   // Variables for contact details
   const [hover,setHover] = useState(null)
   const [selectedContact, setSelectedContact] = useState(null)
+  const [editMode, setEditMode] = useState(false);
 
   // event handler functions
   const handleAddMode = (value) => {
     setAddMode(value)
   }
+
+  const handleEditMode = (value) => {
+    setEditMode(value)
+  }
   
   // Load GraphQL query
-  const {data,refetch} = useQuery(GET_CONTACT_LIST,{
+  const {data} = useQuery(GET_CONTACT_LIST,{
     variables: {
         "where":{
             first_name: {"_like": `%${searchQuery}%`}
@@ -70,7 +75,7 @@ function ContactList() {
 
   return (
     <>
-        {addMode ? <AddContact contactList={contactList} addMode={addMode} refetch={refetch} handleAddMode={handleAddMode} /> :
+        {addMode || editMode ? <AddContact contactList={contactList} setSelectedContact={setSelectedContact} handleAddMode={handleAddMode} editMode={editMode} handleEditMode={handleEditMode} selectedContact={editMode ? selectedContact : {}}/> :
             <div className='row'>
                 <div className='col-12 col-md-6 contact-list'>
                     <div>
@@ -173,22 +178,7 @@ function ContactList() {
                                         </div>
                                         <div className="col favorite d-flex justify-content-end align-items-center">
                                         {/*When user click on button set isFav to true for that ID. Only show when it is not in delete mode*/}
-                                        { contactMode !== "Delete" ? 
-                                            <>
-                                                <button 
-                                                    className='button-style' 
-                                                    type='button'
-                                                    onClick={()=>{
-                                                        setIsFavorite( (prevState) => ({
-                                                            ...prevState,
-                                                            [contact.id]: !prevState[contact.id]
-                                                        }))
-                                                    }}
-                                                >
-                                                    <i className={`button-style fa-star fa-2x ${isFavorite[contact.id] ? "fa-solid" : "fa-regular"}`}></i>
-                                                </button>
-                                            </>:null
-                                        }
+
                                         {
                                             contactMode === 'Delete' ? 
                                                 <button 
@@ -235,7 +225,14 @@ function ContactList() {
                         </div>
                     </div>
                 </div>
-                {selectedContact ? <ContactDetails selectedContact={selectedContact}/> : null}
+                {selectedContact ? 
+                    <ContactDetails 
+                        selectedContact={selectedContact} 
+                        contactList={contactList} 
+                        handleEditMode={handleEditMode} 
+                        isFavorite={isFavorite}
+                        setIsFavorite={setIsFavorite}
+                    /> : null}
             </div>
         }
     </>

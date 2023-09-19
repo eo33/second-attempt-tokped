@@ -17,3 +17,5 @@ Contact Name must be unique and doesn’t have a special Character
 - Unit testing with Jest and React [testing library](https://testing-library.com/)
 - Web capabilities [link](https://developer.chrome.com/blog/fugu-status/)
 
+## Bugs 
+- When you go to the _Favorites_ section by clicking the **Fav** button, you can go to the next page despite not having any contact

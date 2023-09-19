@@ -1,15 +1,24 @@
 import { useEffect,useState } from "react"
 import { useMutation } from "@apollo/client"
-import { ADD_CONTACT_WITH_PHONES } from "../graphql/Mutations"
+import { ADD_CONTACT_WITH_PHONES, EDIT_CONTACT, EDIT_PHONE_NUMBER, ADD_NUMBER_TO_CONTACT } from "../graphql/Mutations"
 import { GET_CONTACT_LIST } from "../graphql/Queries";
 
-function AddContact({contactList, addMode, handleAddMode}) {
-
+function AddContact({contactList, setSelectedContact, handleAddMode, editMode, handleEditMode, selectedContact}) {
   // Variables to store form data
   const [contactName, setContactName] = useState({
     first_name: '',
     last_name: '',
   });
+
+  // Variables for edit 
+  const [edittedFirstName, setEdittedFirstName] = useState(selectedContact.first_name)
+  const [edittedLastName, setEdittedLastName] = useState(selectedContact.last_name)
+  // Variable for main phone. Check if it exists
+  const [showMultipleNumbers,setShowMultipleNumbers] = useState(false)
+  const initialMainPhone = selectedContact.phones && selectedContact.phones[0] ? selectedContact.phones[0].number : "";
+  const [edittedMainPhone, setEdittedMainPhone] = useState(initialMainPhone)
+  const initialSecondaryPhone = selectedContact.phones && selectedContact.phones[1] ? selectedContact.phones.slice(1) : [];
+  const [edittedSecondaryPhone, setEdittedSecondaryPhone] = useState(initialSecondaryPhone.map(e=>e.number))
 
   // Validate special characters
   const specialCharacter = /[^a-zA-Z]/g;
@@ -20,16 +29,16 @@ function AddContact({contactList, addMode, handleAddMode}) {
   const [uniqueName, setUniqueName] = useState(true)
 
   const contactNameHandler = (e) => {
-    const name = e.target.value
-    // Validate special characters
-    if(e.target.id === "first-name") {
-        name.match(specialCharacter) ? setValidateFirstName(false) : setValidateFirstName(true)
-    } 
-    if(e.target.id === "last-name") {
-        name.match(specialCharacter) ? setValidateSecondName(false) : setValidateSecondName(true)
-    } 
-    //console.log(parsedStoredData)
-    setContactName({ ...contactName, [e.target.name]: e.target.value });
+      const name = e.target.value
+      // Validate special characters
+      if(e.target.id === "first-name") {
+          name.match(specialCharacter) ? setValidateFirstName(false) : setValidateFirstName(true)
+      } 
+      if(e.target.id === "last-name") {
+          name.match(specialCharacter) ? setValidateSecondName(false) : setValidateSecondName(true)
+      } 
+      //console.log(parsedStoredData)
+      setContactName({ ...contactName, [e.target.name]: e.target.value });
     };
 
     // check if name is unique
@@ -76,25 +85,75 @@ function AddContact({contactList, addMode, handleAddMode}) {
         refetchQueries: [GET_CONTACT_LIST],
         awaitRefetchQueries:true,
       });
+
       handleAddMode(false);
+      handleEditMode(false);
+  }
+  
+  // Mutations to edit contact 
+  // Name
+  const [editUser] = useMutation(EDIT_CONTACT);
+  // Edit phone number
+  const [editNumber] = useMutation(EDIT_PHONE_NUMBER)
+  // Add phone number
+  const [addNumber] = useMutation(ADD_NUMBER_TO_CONTACT)
+
+  const handleEditSubmit = () => {
+    // Change name
+    const newEdittedName = {
+      first_name: edittedFirstName,
+      last_name: edittedLastName
     }
+    editUser({
+      variables: {
+        id: selectedContact.id,
+        _set: newEdittedName
+      }
+    })
+    // Change phone (check primary)
+    
+    const firstNumber = selectedContact.phones[0].number || "";
+    //console.log('first number', selectedContact.phones[0].number)
+    console.log('first nubmer', firstNumber, "editted", edittedMainPhone, "selected ID", selectedContact.id)
+    
+    if(edittedMainPhone !== firstNumber){
+      editNumber({
+        variables:{
+          "pk_columns": {
+              "number": firstNumber,
+              "contact_id": selectedContact.id
+          },
+          "new_phone_number": edittedMainPhone
+        },
+        refetchQueries: [GET_CONTACT_LIST],
+        awaitRefetchQueries:true
+      })
+    }
+
+    handleAddMode(false);
+    handleEditMode(false);
+  }
+
 
   return (
     <div className="row">
-        {addMode ? 
-        <form className="col-md-8 add-contact d-flex flex-column offset-md-2 border rounded" onSubmit={handleSubmit}>
+        
+        <form className="col-md-8 add-contact d-flex flex-column offset-md-2 border rounded" onSubmit={editMode ? handleEditSubmit : handleSubmit}>
           <div className="row mt-4">
             <div className="col-2 px-4">
               <button
                 className="button-style large-text"
                 type="button"
-                onClick={()=>handleAddMode(false)}
+                onClick={()=>{
+                  handleAddMode(false)
+                  handleEditMode(false)
+                }}
               >
                 Cancel
               </button>
             </div>
             <div className="col d-flex flex-column align-items-center">
-              <p>New contact</p>
+              <p className="display-5">{editMode ? "Edit":"New"} contact</p>
               <i className="fa-solid fa-user profile-pic p-5 fa-6x"></i>
               <p>Add photo</p>
             </div>
@@ -116,7 +175,8 @@ function AddContact({contactList, addMode, handleAddMode}) {
                 name="first_name"
                 id="first-name"
                 className="input-form x-large-text stretch-form"
-                onChange={contactNameHandler}
+                onChange={editMode ? (e)=>setEdittedFirstName(e.target.value) : contactNameHandler}
+                value={editMode ? edittedFirstName : ""}
                 required
               />
             </div>
@@ -134,61 +194,114 @@ function AddContact({contactList, addMode, handleAddMode}) {
                 name="last_name"
                 id="last-name"
                 className="input-form x-large-text stretch-form"
-                onChange={contactNameHandler}
+                onChange={editMode ? (e)=>setEdittedLastName(e.target.value) : contactNameHandler}
+                value={editMode ? edittedLastName:""}
                 required
               />
             </div>
             {!validateSecondName?<p className='validation'>this field can't contain special character</p>:null}
           </div>
           
-
-          <div className="row input-form p-2 m-3 px-4">
-            <div className="col">
-              <label className="mb-0 small-text" htmlFor="phone-number">
-                Phone number*
-              </label>
-              <input
-                type="tel"
-                name="phones[number]"
-                id="phone-number"
-                className="input-form x-large-text stretch-form"
-                onChange={primaryNumberHandler}
-                required
-              />
-            </div>
-          </div>
-
-          {/* Secondary numbers */}
-          {secondaryNumbers.map((number, index) => (
-            <div className="row input-form p-2 m-3 px-4" key={index}>
+          {editMode ? null :
+            <div className="row input-form p-2 m-3 px-4">
               <div className="col">
-                <label className="mb-0 small-text" htmlFor={`secondary-number-${index}`}>
-                  Secondary Phone number {index + 1}*
+                <label className="mb-0 small-text" htmlFor="phone-number">
+                  Phone number*
                 </label>
                 <input
                   type="tel"
-                  name={`secondary_phones[${index}]`}
-                  id={`secondary-number-${index}`}
+                  name="phones[number]"
+                  id="phone-number"
                   className="input-form x-large-text stretch-form"
-                  onChange={(e) => updateSecondaryNumber(index, e.target.value)}
+                  onChange={primaryNumberHandler}
+                  value={editMode ? edittedMainPhone : ""}
                   required
                 />
               </div>
-              <div className="col-1 d-flex align-items-center justify-content-center">
-                <button className="button-style" type="button" onClick={() => setSecondaryNumbers((prev) => prev.filter((_, i) => i !== index))}>
-                  <i className="fa-solid fa-trash"></i>
-                </button>
-              </div>
             </div>
-          ))}
+          }
+          {/**Handle number mutations*/
+            editMode ?
+            <>
+              {
+                selectedContact.phones.map((phone,index)=>(
+                  (index === 0 || showMultipleNumbers) ?
+                    <>
+                      <div className="row input-form p-2 m-3 px-4">
+                        {/**Number */}
+                        <div className="col">
+                          <label className="mb-0 small-text" htmlFor="first-name">
+                              Phone number {index+1}
+                          </label>
+                          <input
+                              type="text"
+                              name="first_name"
+                              id="first-name"
+                              className= {`input-form x-large-text stretch-form ${editMode ? "form-disabled" : ""}`}
+                              required
+                              value={index === 0 ? edittedMainPhone : edittedSecondaryPhone[index-1]}
+                              onChange={
+                                index === 0? (e)=>setEdittedMainPhone(e.target.value) : 
+                                (e)=>setEdittedSecondaryPhone(prevState => {
+                                  const updatedNumbers = [...prevState];
+                                  updatedNumbers[index-1] = e.target.value;
+                                  return (updatedNumbers)
+                                })}
+                          />
+                        </div>
+                      </div>
+                      
+                    </> : null
+                  ))
+              }
 
-          <div className="row p-2 m-3 px-4">
-            <div className="col d-flex justify-content-end">
-              <button className="button-style" type="button" onClick={secondaryNumberHandler}>
-                Add a new number
-              </button>
-            </div>
-          </div>
+              {editMode && (selectedContact.phones.length > 1) ?
+                <div className="row p-2 m-3 px-4">
+                  <div className="col d-flex justify-content-end">
+                    <button className="button-style" type="button" onClick={()=>setShowMultipleNumbers(e => !e)}>
+                      {showMultipleNumbers ? "Hide" : "Show"} secondary numbers
+                    </button>
+                  </div>
+                </div>: null
+              }
+              {/* Secondary numbers */}
+              {secondaryNumbers.map((number, index) => (
+                <div className="row input-form p-2 m-3 px-4" key={index}>
+                  <div className="col">
+                    <label className="mb-0 small-text" htmlFor={`secondary-number-${index}`}>
+                      Secondary Phone number {index + 1}*
+                    </label>
+                    <input
+                      type="tel"
+                      name={`secondary_phones[${index}]`}
+                      id={`secondary-number-${index}`}
+                      className="input-form x-large-text stretch-form"
+                      onChange={(e) => updateSecondaryNumber(index, e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="col-1 d-flex align-items-center justify-content-center">
+                    <button className="button-style" type="button" onClick={() => setSecondaryNumbers((prev) => prev.filter((_, i) => i !== index))}>
+                      <i className="fa-solid fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </> : null
+          }
+          {editMode ?
+            <>
+            {showMultipleNumbers || selectedContact.phones.length === 1?
+              <div className="row p-2 m-3 px-4">
+                <div className="col d-flex justify-content-end">
+                  <button className="button-style" type="button" onClick={secondaryNumberHandler}>
+                    Add a new number
+                  </button>
+                </div>
+              </div> : null
+            }
+            </> : null
+          }
 
           <div className="row px-4 mt-auto">
             <div className="col d-flex flex-column align-items-end justify-content-end">
@@ -198,13 +311,11 @@ function AddContact({contactList, addMode, handleAddMode}) {
                 className={`button-style ${!validateFirstName || !validateSecondName || !uniqueName ? 'not-valid':''}`}
               >
                 <i className="fa-solid fa-paper-plane fa-2x"></i>
-                
                 <p>submit</p>
               </button>
             </div>
           </div>
-        </form>:null
-        }
+        </form>
   </div>
   )
 }

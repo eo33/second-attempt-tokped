@@ -1,8 +1,7 @@
 import {useState} from 'react';
 import "./stylesheet.css"
-import AddContact from './AddContact';
 
-function ContactDetails({selectedContact}) {
+function ContactDetails({selectedContact,contactList, handleEditMode, isFavorite, setIsFavorite}) {
   const [multipleNumbers, setMultipleNumbers] = useState(false)
   const [editMode, setEditMode] = useState(false)
   
@@ -19,7 +18,10 @@ function ContactDetails({selectedContact}) {
                     <div className="col-2 d-flex flex-column align-items-right justify-content-between button-style">
                         <button 
                             className="row button-style"
-                            onClick={()=>setEditMode(e=>!e)}
+                            onClick={()=>{
+                                setEditMode(e=>!e)
+                                handleEditMode(true)
+                            }}
                         >
                             <div className="col d-flex justify-content-center">
                                 <i class="fa-solid fa-pen fa-2x"></i>
@@ -28,14 +30,24 @@ function ContactDetails({selectedContact}) {
                                 Edit
                             </div>
                         </button>
-                        <button className="row button-style">
+                        
+                        <button 
+                            className="row button-style" 
+                            onClick={()=>{
+                                setIsFavorite( (prevState) => ({
+                                    ...prevState,
+                                    [selectedContact.id]: !prevState[selectedContact.id]
+                                }))
+                            }}
+                        >
                             <div className="col d-flex justify-content-center">
-                                <i class="fa-solid fa-star fa-2x"></i>
+                                <i class={`${isFavorite[selectedContact.id] ? "fa-solid" : "fa-regular"} fa-star fa-2x`}></i>
                             </div>
                             <div className="col d-flex justify-content-center">
                                 Favorites
                             </div>
                         </button>
+                        
                     </div>
                 </div>
                 <div className="row">
@@ -79,9 +91,6 @@ function ContactDetails({selectedContact}) {
                     </button>
                 </div>
             </div>: null
-        }
-        {
-            editMode ? <AddContact/>: null
         }
     </div>
   )
