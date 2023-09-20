@@ -3,7 +3,7 @@ import { useMutation } from "@apollo/client"
 import { ADD_CONTACT_WITH_PHONES, EDIT_CONTACT, EDIT_PHONE_NUMBER, ADD_NUMBER_TO_CONTACT } from "../graphql/Mutations"
 import { GET_CONTACT_LIST } from "../graphql/Queries";
 
-function AddContact({contactList, setSelectedContact, handleAddMode, editMode, handleEditMode, selectedContact}) {
+function AddContact({contactList, setEdittedSelection, handleAddMode, editMode, handleEditMode, selectedContact}) {
   // Variables to store form data
   const [contactName, setContactName] = useState({
     first_name: '',
@@ -100,16 +100,18 @@ function AddContact({contactList, setSelectedContact, handleAddMode, editMode, h
 
   const handleEditSubmit = () => {
     // Change name
-    const newEdittedName = {
-      first_name: edittedFirstName,
-      last_name: edittedLastName
-    }
-    editUser({
-      variables: {
-        id: selectedContact.id,
-        _set: newEdittedName
+    const editName = async () => {
+      const newEdittedName = {
+        first_name: edittedFirstName,
+        last_name: edittedLastName
       }
-    })
+      await editUser({
+        variables: {
+          id: selectedContact.id,
+          _set: newEdittedName
+        }
+      })
+    }
     // Change phone (check primary)
     const editPrimaryPhone = async() => {
       const firstNumber = selectedContact.phones[0].number || "";
@@ -124,8 +126,6 @@ function AddContact({contactList, setSelectedContact, handleAddMode, editMode, h
         refetchQueries: [GET_CONTACT_LIST],
         awaitRefetchQueries:true
       })
-      //const start0 = Date.now();
-      //while (Date.now() - start0 < 50) {} 
     }
     // Change secondary phones
     const editSecondaryPhones = async() => {
@@ -143,9 +143,6 @@ function AddContact({contactList, setSelectedContact, handleAddMode, editMode, h
           refetchQueries: [GET_CONTACT_LIST],
           awaitRefetchQueries: true
         })
-        // CODE TO LET MUTATION RUN FIRST
-        // const start = Date.now();
-        // while (Date.now() - start < 50) {} 
       }
     }
     
@@ -162,16 +159,17 @@ function AddContact({contactList, setSelectedContact, handleAddMode, editMode, h
             awaitRefetchQueries: true
           })  
         }
-        // CODE TO LET MUTATION ENTER FIRST
-        // const start2 = Date.now();
-        // while (Date.now() - start2 < 50) {} 
       }
     }
-    editPrimaryPhone()
+    editName()
+      .then(editPrimaryPhone)
       .then(editSecondaryPhones)
       .then(addNewPhones)
       .catch(error => {console.error('Error',error)})
-          
+
+    //const newSelectedContactIndex = contactList.findIndex(contact => contact.id === selectedContact.id)
+    //setSelectedContact(contactList(newSelectedContactIndex))
+    setEdittedSelection(selectedContact.id)
     handleAddMode(false);
     handleEditMode(false);
   }

@@ -61,7 +61,7 @@
     animation: 0.5s fadeInFromLeft  ease-in-out forwards;
 }
 
-.contact-list{
+.contact-list, .contact-details{
     animation: 0.5s fadeIn ease-in-out forwards;
 }
 

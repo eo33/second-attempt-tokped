@@ -1,7 +1,7 @@
 import {useState} from 'react';
 import "./stylesheet.css"
 
-function ContactDetails({selectedContact,contactList, handleEditMode, isFavorite, setIsFavorite}) {
+function ContactDetails({selectedContact,contactList, handleEditMode, isFavorite, setIsFavorite, showList,setShowList,setShowDetail}) {
   const [multipleNumbers, setMultipleNumbers] = useState(false)
   const [editMode, setEditMode] = useState(false)
   
@@ -11,7 +11,20 @@ function ContactDetails({selectedContact,contactList, handleEditMode, isFavorite
             {/*Profile picture + name + edit and favorite*/}
             <div className="col p-5 pb-1 pt-3">
                 <div className="row">
-                    <div className="col-2"></div>
+                    <div className="col-2">
+                        {showList === false ?
+                            <button 
+                                className="button-style large-text" 
+                                type="button" 
+                                onClick={()=>{
+                                    setShowList(true);
+                                    setShowDetail(false);
+                                }}
+                            >
+                                Back
+                            </button> : null
+                        }
+                    </div>
                     <div className="col-8 d-flex justify-content-center align-items-center">
                         <i class="fa-solid fa-user fa-10x contact-details-pic p-5"></i>
                     </div>
