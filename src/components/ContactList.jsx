@@ -145,8 +145,9 @@ function ContactList() {
                             </div>      
                         </div>
                         {/**CONTACTLIST */}
+                        {contactMode === 'Contacts' ? <p className='mb-0'>Regular</p>: null}
                         {
-                            // Logic: filter when it is in favorite, or when it is in delete mode. Also, only print 10 contacts
+                            // Logic: filter when it is in favorite, or when it is in delete mode. Also, only print 12 contacts
                             contactList
                                 .filter(contact => (isFavorite[contact.id] === showFavorite) || (contactMode==="Delete"))
                                 .slice((page-1)*12,page*12)
@@ -216,7 +217,7 @@ function ContactList() {
                             <div className="col-auto mx-0 px-0">{page}</div>
                             <div className="col-auto">
                             <button 
-                                className={`button-style ${page === Math.ceil(availableContact/12) ? "button-disabled": ""}`}
+                                className={`button-style ${page === Math.ceil(availableContact/12) || (availableContact <= 12) ? "button-disabled": ""}`}
                                 onClick={()=>{setPage(e=>e+1)}}
                                 >
                                 <i className="fa-solid fa-chevron-right mx-0 px-0"></i>

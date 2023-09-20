@@ -111,13 +111,9 @@ function AddContact({contactList, setSelectedContact, handleAddMode, editMode, h
       }
     })
     // Change phone (check primary)
-    
-    const firstNumber = selectedContact.phones[0].number || "";
-    //console.log('first number', selectedContact.phones[0].number)
-    console.log('first nubmer', firstNumber, "editted", edittedMainPhone, "selected ID", selectedContact.id)
-    
-    if(edittedMainPhone !== firstNumber){
-      editNumber({
+    const editPrimaryPhone = async() => {
+      const firstNumber = selectedContact.phones[0].number || "";
+      await editNumber({
         variables:{
           "pk_columns": {
               "number": firstNumber,
@@ -128,8 +124,54 @@ function AddContact({contactList, setSelectedContact, handleAddMode, editMode, h
         refetchQueries: [GET_CONTACT_LIST],
         awaitRefetchQueries:true
       })
+      //const start0 = Date.now();
+      //while (Date.now() - start0 < 50) {} 
     }
-
+    // Change secondary phones
+    const editSecondaryPhones = async() => {
+      const secondaryNumbersSelected = selectedContact.phones.slice(1).map(e=>e.number) || [];
+      
+      for(let i = 0; i < secondaryNumbersSelected.length; i++){
+        await editNumber({
+          variables:{
+            "pk_columns":{
+              "number":secondaryNumbersSelected[i],
+              "contact_id": selectedContact.id
+            },
+            "new_phone_number": edittedSecondaryPhone[i]
+          },
+          refetchQueries: [GET_CONTACT_LIST],
+          awaitRefetchQueries: true
+        })
+        // CODE TO LET MUTATION RUN FIRST
+        // const start = Date.now();
+        // while (Date.now() - start < 50) {} 
+      }
+    }
+    
+    // Add new phone
+    const addNewPhones = async () => {
+      for(let newNumber of secondaryNumbers){
+        if(newNumber !== ""){
+          await addNumber({
+            variables:{
+              "contact_id":selectedContact.id,
+              "phone_number": newNumber
+            },
+            refetchQueries: [GET_CONTACT_LIST],
+            awaitRefetchQueries: true
+          })  
+        }
+        // CODE TO LET MUTATION ENTER FIRST
+        // const start2 = Date.now();
+        // while (Date.now() - start2 < 50) {} 
+      }
+    }
+    editPrimaryPhone()
+      .then(editSecondaryPhones)
+      .then(addNewPhones)
+      .catch(error => {console.error('Error',error)})
+          
     handleAddMode(false);
     handleEditMode(false);
   }
@@ -176,7 +218,7 @@ function AddContact({contactList, setSelectedContact, handleAddMode, editMode, h
                 id="first-name"
                 className="input-form x-large-text stretch-form"
                 onChange={editMode ? (e)=>setEdittedFirstName(e.target.value) : contactNameHandler}
-                value={editMode ? edittedFirstName : ""}
+                value={editMode ? edittedFirstName : contactName.first_name}
                 required
               />
             </div>
@@ -195,7 +237,7 @@ function AddContact({contactList, setSelectedContact, handleAddMode, editMode, h
                 id="last-name"
                 className="input-form x-large-text stretch-form"
                 onChange={editMode ? (e)=>setEdittedLastName(e.target.value) : contactNameHandler}
-                value={editMode ? edittedLastName:""}
+                value={editMode ? edittedLastName: contactName.last_name}
                 required
               />
             </div>
@@ -214,7 +256,7 @@ function AddContact({contactList, setSelectedContact, handleAddMode, editMode, h
                   id="phone-number"
                   className="input-form x-large-text stretch-form"
                   onChange={primaryNumberHandler}
-                  value={editMode ? edittedMainPhone : ""}
+                  value={primaryNumber}
                   required
                 />
               </div>
@@ -264,44 +306,41 @@ function AddContact({contactList, setSelectedContact, handleAddMode, editMode, h
                   </div>
                 </div>: null
               }
-              {/* Secondary numbers */}
-              {secondaryNumbers.map((number, index) => (
-                <div className="row input-form p-2 m-3 px-4" key={index}>
-                  <div className="col">
-                    <label className="mb-0 small-text" htmlFor={`secondary-number-${index}`}>
-                      Secondary Phone number {index + 1}*
-                    </label>
-                    <input
-                      type="tel"
-                      name={`secondary_phones[${index}]`}
-                      id={`secondary-number-${index}`}
-                      className="input-form x-large-text stretch-form"
-                      onChange={(e) => updateSecondaryNumber(index, e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="col-1 d-flex align-items-center justify-content-center">
-                    <button className="button-style" type="button" onClick={() => setSecondaryNumbers((prev) => prev.filter((_, i) => i !== index))}>
-                      <i className="fa-solid fa-trash"></i>
-                    </button>
-                  </div>
-                </div>
-              ))}
             </> : null
           }
-          {editMode ?
-            <>
-            {showMultipleNumbers || selectedContact.phones.length === 1?
-              <div className="row p-2 m-3 px-4">
-                <div className="col d-flex justify-content-end">
-                  <button className="button-style" type="button" onClick={secondaryNumberHandler}>
-                    Add a new number
-                  </button>
-                </div>
-              </div> : null
-            }
-            </> : null
-          }
+          {/* Secondary numbers */}
+          {secondaryNumbers.map((number, index) => (
+            <div className="row input-form p-2 m-3 px-4" key={index}>
+              <div className="col">
+                <label className="mb-0 small-text" htmlFor={`secondary-number-${index}`}>
+                  Secondary Phone number {index + 1}*
+                </label>
+                <input
+                  type="tel"
+                  name={`secondary_phones[${index}]`}
+                  id={`secondary-number-${index}`}
+                  className="input-form x-large-text stretch-form"
+                  onChange={(e) => updateSecondaryNumber(index, e.target.value)}
+                  required
+                />
+              </div>
+              <div className="col-1 d-flex align-items-center justify-content-center">
+                <button className="button-style" type="button" onClick={() => setSecondaryNumbers((prev) => prev.filter((_, i) => i !== index))}>
+                  <i className="fa-solid fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          ))}
+
+              
+          <div className="row p-2 m-3 px-4">
+            <div className="col d-flex justify-content-end">
+              <button className="button-style" type="button" onClick={secondaryNumberHandler}>
+                Add a new number
+              </button>
+            </div>
+          </div> 
+              
 
           <div className="row px-4 mt-auto">
             <div className="col d-flex flex-column align-items-end justify-content-end">
