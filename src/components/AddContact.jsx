@@ -37,21 +37,35 @@ function AddContact({contactList, setEdittedSelection, handleAddMode, editMode, 
       if(e.target.id === "last-name") {
           name.match(specialCharacter) ? setValidateSecondName(false) : setValidateSecondName(true)
       } 
-      //console.log(parsedStoredData)
-      setContactName({ ...contactName, [e.target.name]: e.target.value });
+      if(editMode){
+        if(e.target.id === "first-name"){
+          setEdittedFirstName(e.target.value)
+        } else {
+          setEdittedLastName(e.target.value)
+        }
+      }else{
+        setContactName({ ...contactName, [e.target.name]: e.target.value });
+      }
     };
 
     // check if name is unique
     useEffect(()=>{ 
         const listOfNames = contactList.map((contact)=>contact.first_name+contact.last_name)
-        let currentName = contactName.first_name+contactName.last_name
+        let currentName = editMode ? edittedFirstName + edittedLastName : contactName.first_name + contactName.last_name
+
+        if(editMode){
+          // drop the current name from the listOfNames
+          const currentNameIndex = listOfNames.indexOf(selectedContact.first_name+selectedContact.last_name)
+          if(currentNameIndex !== -1){listOfNames.splice(currentNameIndex,1)}
+          console.log(currentNameIndex)
+        }
 
         if(listOfNames.includes(currentName)){
             setUniqueName(false)
         } else {
             setUniqueName(true)
         }
-    },[contactName,contactList])
+    },[contactName,contactList,editMode, selectedContact, edittedFirstName,edittedLastName])
 
 
   // Seperate primary number and secondary number
@@ -167,8 +181,6 @@ function AddContact({contactList, setEdittedSelection, handleAddMode, editMode, 
       .then(addNewPhones)
       .catch(error => {console.error('Error',error)})
 
-    //const newSelectedContactIndex = contactList.findIndex(contact => contact.id === selectedContact.id)
-    //setSelectedContact(contactList(newSelectedContactIndex))
     setEdittedSelection(selectedContact.id)
     handleAddMode(false);
     handleEditMode(false);
@@ -215,7 +227,7 @@ function AddContact({contactList, setEdittedSelection, handleAddMode, editMode, 
                 name="first_name"
                 id="first-name"
                 className="input-form x-large-text stretch-form"
-                onChange={editMode ? (e)=>setEdittedFirstName(e.target.value) : contactNameHandler}
+                onChange={contactNameHandler}
                 value={editMode ? edittedFirstName : contactName.first_name}
                 required
               />
@@ -234,7 +246,7 @@ function AddContact({contactList, setEdittedSelection, handleAddMode, editMode, 
                 name="last_name"
                 id="last-name"
                 className="input-form x-large-text stretch-form"
-                onChange={editMode ? (e)=>setEdittedLastName(e.target.value) : contactNameHandler}
+                onChange={contactNameHandler}
                 value={editMode ? edittedLastName: contactName.last_name}
                 required
               />

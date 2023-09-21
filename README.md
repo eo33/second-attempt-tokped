@@ -4,10 +4,10 @@ Second attempt at Tokopedia Contact App.
 
 ## Optional functionalities to implement
 
-### Edit contact (IN PROGRESS): 
+### Edit contact (DONE): 
 The user should be able to edit the contact 
 
-### Form edit contact (IN PROGRESS):
+### Form edit contact (DONE):
 As a user, I can submit edited existing contact:
 The user should be able to see current contact information
 Contact Name must be unique and doesn’t have a special Character
@@ -18,4 +18,4 @@ Contact Name must be unique and doesn’t have a special Character
 - Web capabilities [link](https://developer.chrome.com/blog/fugu-status/)
 
 ## Bugs 
-- When you go to the _Favorites_ section by clicking the **Fav** button, you can go to the next page despite not having any contact
+None found
