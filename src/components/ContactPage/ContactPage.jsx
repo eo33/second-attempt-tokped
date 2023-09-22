@@ -108,6 +108,7 @@ function ContactPage() {
                   setContactMode={setContactMode}
                   setShowFavorite={setShowFavorite}
                   setAddMode={setAddMode}
+                  setPage={setPage}
                 />
                 <Searchbar setSearchQuery={setSearchQuery} setPage={setPage} />
                 <ListOfContacts

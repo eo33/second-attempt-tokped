@@ -1,4 +1,4 @@
-function Navbar({ contactMode, setContactMode, setShowFavorite, setAddMode }) {
+function Navbar({ contactMode, setContactMode, setShowFavorite, setAddMode, setPage }) {
   return (
     <>
       <div className="row mt-1">
@@ -13,6 +13,7 @@ function Navbar({ contactMode, setContactMode, setShowFavorite, setAddMode }) {
                 onClick={() => {
                   setContactMode("Favorites");
                   setShowFavorite(true);
+                  setPage(1)
                 }}
               >
                 <i class="fa-solid fa-star fa-2x"></i>
@@ -44,6 +45,7 @@ function Navbar({ contactMode, setContactMode, setShowFavorite, setAddMode }) {
                 onClick={() => {
                   setContactMode("Contacts");
                   setShowFavorite(false);
+                  setPage(1)
                 }}
               >
                 <i class="fa-solid fa-arrow-rotate-left fa-2x"></i>
