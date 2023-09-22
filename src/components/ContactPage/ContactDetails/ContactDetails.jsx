@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./stylesheet.css";
+import "../../stylesheet.css";
 import EditName from "./EditName";
 import EditNumbers from "./EditNumbers";
 

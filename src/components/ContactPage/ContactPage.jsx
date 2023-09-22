@@ -1,19 +1,19 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@apollo/client";
-import { GET_CONTACT_LIST } from "../graphql/Queries";
-import { DELETE_CONTACT_PHONE } from "../graphql/Mutations";
+import { GET_CONTACT_LIST } from "../../graphql/Queries";
+import { DELETE_CONTACT_PHONE } from "../../graphql/Mutations";
 
 import Navbar from "./Navbar";
 import Searchbar from "./Searchbar";
 import Pagination from "./Pagination";
 import ListOfContacts from "./ListOfContacts";
-import AddContact from "./AddContact";
-import ContactDetails from "./ContactDetails";
+import ModifyContactPage from "../ModifyContactPage/ModifyContactPage";
+import ContactDetails from "./ContactDetails/ContactDetails";
 
 import "bootstrap/dist/css/bootstrap.css";
-import "./stylesheet.css";
+import "../stylesheet.css";
 
-function ContactList() {
+function ContactPage() {
   // init variables for main contact page
   const [contactMode, setContactMode] = useState("Contacts");
   const [contactList, setContactList] = useState([]);
@@ -90,7 +90,7 @@ function ContactList() {
   return (
     <>
       {addMode || editMode ? (
-        <AddContact
+        <ModifyContactPage
           contactList={contactList}
           setEdittedSelection={setEdittedSelection}
           setAddMode={setAddMode}
@@ -151,4 +151,4 @@ function ContactList() {
   );
 }
 
-export default ContactList;
+export default ContactPage;
