@@ -7,6 +7,7 @@ function ListOfContacts({
   page,
   deleteUser,
   setHover,
+  selectedContact,
   setSelectedContact,
   showDetail,
   setShowDetail,
@@ -27,9 +28,10 @@ function ListOfContacts({
           .map((contact) => (
             <>
               <div
-                className={`row contact-list mt-0 border-top pt-2 ${
-                  hover === contact.id ? "hovered" : ""
-                }`}
+                className={`row contact-list mt-0 border-top pt-2 
+                ${hover === contact.id ? "hovered" : ""}
+                ${selectedContact.id === contact.id ? "hovered" : ""}
+                `}
                 onMouseEnter={() => setHover(contact.id)}
                 onMouseLeave={() => setHover(null)}
                 onClick={() => {

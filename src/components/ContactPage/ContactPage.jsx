@@ -120,6 +120,7 @@ function ContactPage() {
                   page={page}
                   deleteUser={deleteUser}
                   setHover={setHover}
+                  selectedContact={selectedContact}
                   setSelectedContact={setSelectedContact}
                   showDetail={showDetail}
                   setShowDetail={setShowDetail}

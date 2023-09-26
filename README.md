@@ -17,9 +17,9 @@ Modularize different parts of the component to make it more readable
 
 ### Custom: Selected contact (IN PROGRESS):
 As a user, I want to be able to see the contact details of the first contact appearing on the screen:
+- The selected contact should be highlighted to show it is currently being selected. (DONE)
 - After creating a new user using the Add button, user should see the details of the newly created contact, and the page should also be updated according.
 - After clicking on the Fav button or Back button, user should see the details of the first appearing contact.
-- The selected contact should be highlighted to show it is currently being selected.
 
 ### Use the following tech (IN PROGRESS):
 - CSS-in-JS using Emotion
