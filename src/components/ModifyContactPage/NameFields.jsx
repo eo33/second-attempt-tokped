@@ -10,6 +10,7 @@ function NameFields({
   validateSecondName,
   handleNameValidation,
 }) {
+  
   return (
     <>
       <div className="row mt-4">

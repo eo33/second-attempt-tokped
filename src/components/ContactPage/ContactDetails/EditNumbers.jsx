@@ -1,9 +1,11 @@
+import { useState } from "react";
+
 function EditNumbers({
   selectedContact,
-  multipleNumbers,
-  setMultipleNumbers,
-  editMode,
+  editMode
 }) {
+  const [multipleNumbers, setMultipleNumbers] = useState(false);
+
   return (
     <>
       {selectedContact.phones.map((phone, index) =>

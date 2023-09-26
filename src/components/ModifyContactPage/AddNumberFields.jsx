@@ -5,6 +5,13 @@ function AddNumberFields({
   validateSecondName,
   uniqueName,
 }) {
+
+  const updateSecondaryNumber = (index, value) => {
+    const updatedSecondaryNumbers = [...secondaryNumbers];
+    updatedSecondaryNumbers[index] = value;
+    setSecondaryNumbers(updatedSecondaryNumbers);
+  };
+
   return (
     <>
       {/* Secondary numbers */}
@@ -23,11 +30,7 @@ function AddNumberFields({
               id={`secondary-number-${index}`}
               className="input-form x-large-text stretch-form"
               required
-              onChange={(index, e) => {
-                const updatedSecondaryNumbers = [...secondaryNumbers];
-                updatedSecondaryNumbers[index] = e.target.value;
-                setSecondaryNumbers(updatedSecondaryNumbers);
-              }}
+              onChange={(e) => updateSecondaryNumber(index, e.target.value)}
             />
           </div>
           <div className="col-1 d-flex align-items-center justify-content-center">

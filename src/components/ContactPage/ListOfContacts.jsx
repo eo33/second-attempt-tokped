@@ -12,6 +12,7 @@ function ListOfContacts({
   showDetail,
   setShowDetail,
   setShowList,
+  setModifySelectedID,
   GET_CONTACT_LIST,
 }) {
   return (
@@ -77,6 +78,8 @@ function ListOfContacts({
                           refetchQueries: [GET_CONTACT_LIST],
                           awaitRefetchQueries: true,
                         });
+                        // Reset selection
+                        setModifySelectedID(null)
                       }}
                     >
                       <i className="button-style fa-solid fa-trash fa-2x"></i>

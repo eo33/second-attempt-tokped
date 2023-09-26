@@ -1,4 +1,4 @@
-function Navbar({ contactMode, setContactMode, setShowFavorite, setAddMode, setPage }) {
+function Navbar({ contactMode, setContactMode, setShowFavorite, setAddMode, setPage, setModifySelectedID }) {
   return (
     <>
       <div className="row mt-1">
@@ -13,6 +13,7 @@ function Navbar({ contactMode, setContactMode, setShowFavorite, setAddMode, setP
                 onClick={() => {
                   setContactMode("Favorites");
                   setShowFavorite(true);
+                  setModifySelectedID(null)
                   setPage(1)
                 }}
               >
@@ -45,6 +46,7 @@ function Navbar({ contactMode, setContactMode, setShowFavorite, setAddMode, setP
                 onClick={() => {
                   setContactMode("Contacts");
                   setShowFavorite(false);
+                  setModifySelectedID(null)
                   setPage(1)
                 }}
               >

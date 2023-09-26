@@ -28,7 +28,7 @@ function ContactPage() {
   const [hover, setHover] = useState(null);
   const [selectedContact, setSelectedContact] = useState(null);
   const [editMode, setEditMode] = useState(false);
-  const [edittedSelection, setEdittedSelection] = useState(null);
+  const [modifySelectedID, setModifySelectedID] = useState(null);
   const [showList, setShowList] = useState(true);
   const [showDetail, setShowDetail] = useState(true);
 
@@ -54,16 +54,16 @@ function ContactPage() {
   useEffect(() => {
     if (data) {
       setContactList(data.contact);
-      if (!edittedSelection) {
+      if (!modifySelectedID) {
         setSelectedContact(data.contact[0]);
       } else {
         const newSelectedContactIndex = data.contact.findIndex(
-          (contactObj) => contactObj.id === edittedSelection
+          (contactObj) => contactObj.id === modifySelectedID
         );
         setSelectedContact(data.contact[newSelectedContactIndex]);
       }
     }
-  }, [data, edittedSelection]);
+  }, [data, modifySelectedID]);
 
   // useEffect to update favorite contact and pagination
   useEffect(() => {
@@ -92,11 +92,12 @@ function ContactPage() {
       {addMode || editMode ? (
         <ModifyContactPage
           contactList={contactList}
-          setEdittedSelection={setEdittedSelection}
+          setModifySelectedID={setModifySelectedID}
           setAddMode={setAddMode}
           editMode={editMode}
           setEditMode={setEditMode}
           selectedContact={editMode ? selectedContact : {}}
+          setSelectedContact={setSelectedContact}
         />
       ) : (
         <div className="row">
@@ -109,6 +110,7 @@ function ContactPage() {
                   setShowFavorite={setShowFavorite}
                   setAddMode={setAddMode}
                   setPage={setPage}
+                  setModifySelectedID={setModifySelectedID}
                 />
                 <Searchbar setSearchQuery={setSearchQuery} setPage={setPage} />
                 <ListOfContacts
@@ -126,6 +128,7 @@ function ContactPage() {
                   setShowDetail={setShowDetail}
                   setShowList={setShowList}
                   GET_CONTACT_LIST={GET_CONTACT_LIST}
+                  setModifySelectedID={setModifySelectedID}
                 />
                 <Pagination
                   page={page}

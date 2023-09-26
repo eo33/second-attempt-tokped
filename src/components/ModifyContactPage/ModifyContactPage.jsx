@@ -15,11 +15,12 @@ import AddNumberFields from "./AddNumberFields";
 
 function ModifyContactPage({
   contactList,
-  setEdittedSelection,
+  setModifySelectedID,
   setAddMode,
   editMode,
   setEditMode,
   selectedContact,
+  setSelectedContact,
 }) {
   // Variables for adding contact
   const [contactName, setContactName] = useState({first_name: "", last_name: "",});
@@ -108,12 +109,20 @@ function ModifyContactPage({
       ...contactName,
       phones: phones.map((number) => ({ number })),
     };
-    createUser({
-      variables: newUser,
-      refetchQueries: [GET_CONTACT_LIST],
-      awaitRefetchQueries: true,
-    });
 
+    const createNewUser = async () => {
+      const {data} = await createUser({
+        variables: newUser,
+        refetchQueries: [GET_CONTACT_LIST],
+        awaitRefetchQueries: true,
+      });
+      console.log(data.insert_contact)
+      setModifySelectedID(data.insert_contact.returning[0].id)
+      //setModifySelectedID(data)
+      setSelectedContact(data.insert_contact.returning[0])
+    }
+
+    createNewUser();
     setAddMode(false);
     setEditMode(false);
   };
@@ -194,7 +203,7 @@ function ModifyContactPage({
         console.error("Error", error);
       });
 
-    setEdittedSelection(selectedContact.id);
+    setModifySelectedID(selectedContact.id);
     setAddMode(false);
     setEditMode(false);
   };

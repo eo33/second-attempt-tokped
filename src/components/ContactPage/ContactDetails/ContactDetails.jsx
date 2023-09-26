@@ -1,11 +1,9 @@
-import { useState } from "react";
 import "../../stylesheet.css";
 import EditName from "./EditName";
 import EditNumbers from "./EditNumbers";
 
 function ContactDetails({
   selectedContact,
-  contactList,
   editMode,
   setEditMode,
   isFavorite,
@@ -14,8 +12,6 @@ function ContactDetails({
   setShowList,
   setShowDetail,
 }) {
-  const [multipleNumbers, setMultipleNumbers] = useState(false);
-  //const [editMode, setEditMode] = useState(false);
 
   return (
     <div className="col-12 col-md-6 contact-details">
@@ -30,8 +26,6 @@ function ContactDetails({
       />
       <EditNumbers
         selectedContact={selectedContact}
-        multipleNumbers={multipleNumbers}
-        setMultipleNumbers={setMultipleNumbers}
         editMode={editMode}
       />
     </div>
